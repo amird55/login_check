@@ -21,6 +21,7 @@ app.use(express.static(path.join(__dirname, "js")));
 app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, "/views"));
 
+global.loginPageUrl="/login";
 const pg_rtr = require('./routers/pages_R');
 app.use('/p',pg_rtr);
 const auth_rtr = require('./routers/auth_R');

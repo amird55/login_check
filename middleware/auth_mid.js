@@ -46,8 +46,19 @@ function SetLoginToken(req,res){
         maxAge: maxAge * 1000, // 3hrs in ms
     });
 }
-function isLogged(){
-
+function isLogged(req,res,next){
+    const token = req.cookies.jwt
+    if (token) {
+        jwt.verify(token, jwtSecret, (err, decodedToken) => {
+            if (err) {
+                return res.redirect(loginPageUrl)
+            } else {
+                next()
+            }
+        })
+    } else {
+        return res.redirect(loginPageUrl)
+    }
 }
 module.exports = {
     check_login:check_login,

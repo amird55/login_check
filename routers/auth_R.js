@@ -11,6 +11,6 @@ router.post("/login",[auth_mid.check_login],function (req,res,next){
         if(res.loggedEn) {
                 return res.redirect("/p/1");
         } else {
-                return res.redirect("/login");
+                return res.redirect(loginPageUrl);
         }
 });
