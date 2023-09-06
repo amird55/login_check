@@ -19,6 +19,7 @@ let pool = mysql.createPool({
     enableKeepAlive: true,
     keepAliveInitialDelay: 0
 })
+
 module.exports = {
     pool:pool
 };
