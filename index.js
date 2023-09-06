@@ -22,8 +22,10 @@ app.set("view engine", "ejs");
 app.set('views', path.join(__dirname, "/views"));
 
 global.loginPageUrl="/login";
+const auth_mid=require("./middleware/auth_mid");
+
 const pg_rtr = require('./routers/pages_R');
-app.use('/p',pg_rtr);
+app.use('/p',[auth_mid.isLogged],pg_rtr);
 const auth_rtr = require('./routers/auth_R');
 app.use('/',auth_rtr);
 
