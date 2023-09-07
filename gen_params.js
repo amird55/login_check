@@ -7,4 +7,5 @@ exports.DATABASE    ="login_check";
 // require("crypto").randomBytes(35).toString("hex")
 exports.jwtSecret ="7145732a5924ea88839d9b7557c637074b8ddd405d2bf523407393472b5ad7a9a47585";
 
+exports.Salt="Q";
 

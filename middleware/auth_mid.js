@@ -1,17 +1,48 @@
 const jwt = require('jsonwebtoken')
 const jwtSecret =require("../gen_params").jwtSecret;
 
+const { RateLimiterMemory } = require("rate-limiter-flexible"); //brute force protection
+const opts = {
+    points: 6, // 5 errors
+    duration: 3*60, // Per 3 minutes
+};
+const rateLimiter = new RateLimiterMemory(opts);
+
+
+const md5 = require('md5');
+const Salt=require("../gen_params").Salt;
+function EncWithSalt(str){
+    return md5(Salt+str);
+}
 async function check_login(req,res,next){
-    await CheckUserInDb(req,res);
-    if(res.loggedEn) {
-        SetLoginToken(req, res);
+    let points=-3;
+    await rateLimiter.consume(req.connection.remoteAddress, 1)
+        .then((rateLimiterRes) => {
+            // 1 points consumed
+            points=rateLimiterRes.remainingPoints;
+            // console.log("point taken ",points," to go");
+        })
+        .catch((rateLimiterRes) => {
+            // Not enough points to consume
+            points=0;
+            // console.log("no points left");
+        });
+    if(points > 0) {
+        await CheckUserInDb(req, res);
+        if (res.loggedEn) {
+            SetLoginToken(req, res);
+        }
+    } else {
+        res.loggedEn=false;
     }
     next();
 }
 async function CheckUserInDb(req,res){
-    let {uname,passwd}=req.body;
+    // let {uname,passwd}=req.body;
+    let uname = addSlashes(req.body.uname);
+    let passwd = EncWithSalt(req.body.passwd);
+
     res.loggedEn=false;
-    // let user= {id: 2, name: "hello", LvL: 1};
     req.user={}
 
     let Query = `SELECT * FROM \`users\` WHERE uname='${uname}' AND pass='${passwd}' `;
@@ -61,6 +92,7 @@ function isLogged(req,res,next){
     }
 }
 module.exports = {
+    EncWithSalt:EncWithSalt,
     check_login:check_login,
     isLogged:isLogged
 };
