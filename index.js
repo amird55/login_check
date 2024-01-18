@@ -36,6 +36,8 @@ const user_rtr = require('./routers/user_crud_R');
 app.use('/u',user_rtr);
 const auth_rtr = require('./routers/auth_R');
 app.use('/',auth_rtr);
+const register_R = require('./routers/register_R');
+app.use('/',register_R);
 
 app.listen(port, () => {            //server starts listening for any attempts from a client to connect at port: {port}
     console.log(`Now listening on port http://localhost:${port}`);
